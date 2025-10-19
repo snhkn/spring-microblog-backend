@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.context.annotation.EnableMBeanExport;
 
 import java.time.LocalDateTime;
 
@@ -18,13 +19,13 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String author;
-
-    private String title;
-
     private String body;
 
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime timestamp = LocalDateTime.now();
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private SocialUser author;
 
 
 
