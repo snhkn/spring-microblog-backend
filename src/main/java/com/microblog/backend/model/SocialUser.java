@@ -21,7 +21,7 @@ public class SocialUser {
 
     private String username;
     private String email;
-    private String passwordHash;
+    private String password;
 
     @OneToMany(mappedBy = "author")
     private List<Post> posts;

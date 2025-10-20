@@ -1,10 +1,11 @@
 package com.microblog.backend.security.request;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Setter
-@Getter
+
+@NoArgsConstructor
+@Data
 public class LoginRequest {
 
     private String email;

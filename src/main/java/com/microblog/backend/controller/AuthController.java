@@ -5,45 +5,51 @@ import com.microblog.backend.model.SocialUser;
 import com.microblog.backend.repositories.UserRepository;
 import com.microblog.backend.security.request.LoginRequest;
 import com.microblog.backend.security.request.SignUpRequest;
-import org.springframework.http.HttpStatus;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Optional;
 
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
+    private final AuthenticationManager authenticationManager;
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
-        Optional<SocialUser> userOpt = userRepository.findByEmail(loginRequest.getEmail());
+    public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest, HttpServletRequest req ){
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
+        Authentication authentication = authenticationManager.authenticate(authenticationToken);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        if(userOpt.isEmpty()){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Error: Invalid email or password");
-        }
+        // create session manually and attach authentication
+        HttpSession session = req.getSession(true);
+        session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+                SecurityContextHolder.getContext());
 
-        SocialUser user = userOpt.get();
-        System.out.println(userOpt);
-        System.out.println(user);
-        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPasswordHash())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Error: Invalid email or password");
-        }
-
-        return ResponseEntity.ok("User authenticated successfully!");
+        return ResponseEntity.ok("Login successful");
 
 
     }
@@ -57,11 +63,20 @@ public class AuthController {
         SocialUser newUser = new SocialUser();
         newUser.setEmail(signUpRequest.getEmail());
         newUser.setUsername(signUpRequest.getUsername());
-        newUser.setPasswordHash(passwordEncoder.encode(signUpRequest.getPassword()));
+        newUser.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
 
         userRepository.save(newUser);
 
         return ResponseEntity.ok("User registered successfully!");
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+        return ResponseEntity.ok("Logged out successfully");
     }
 
 }
