@@ -27,4 +27,11 @@ public class ProfileServiceImpl implements ProfileService{
 
         return modelMapper.map(user, ProfileDTO.class);
     }
+
+    @Override
+    public ProfileDTO getMyProfile(String email) {
+        SocialUser user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        return modelMapper.map(user, ProfileDTO.class);
+    }
 }
