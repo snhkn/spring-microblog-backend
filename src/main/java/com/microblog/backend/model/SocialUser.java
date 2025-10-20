@@ -29,6 +29,8 @@ public class SocialUser {
     @Column(name = "last_seen")
     private LocalDateTime lastSeen;
 
+    private String aboutMe;
+
 
     @OneToMany(mappedBy = "author")
     private List<Post> posts;

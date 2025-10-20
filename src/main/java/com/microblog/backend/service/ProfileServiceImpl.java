@@ -34,4 +34,14 @@ public class ProfileServiceImpl implements ProfileService{
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         return modelMapper.map(user, ProfileDTO.class);
     }
+
+    @Override
+    public ProfileDTO updateMyProfile(String email, ProfileDTO dto) {
+        SocialUser user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        user.setAboutMe(dto.getAboutMe());
+        userRepository.save(user);
+        return modelMapper.map(user, ProfileDTO.class);
+    }
 }

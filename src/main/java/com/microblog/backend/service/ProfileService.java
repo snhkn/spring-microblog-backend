@@ -8,4 +8,6 @@ public interface ProfileService {
     ProfileDTO getProfileByUsername(String username);
 
     ProfileDTO getMyProfile(String name);
+
+    ProfileDTO updateMyProfile(String name, ProfileDTO profileDTO);
 }

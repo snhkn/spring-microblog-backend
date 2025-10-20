@@ -14,6 +14,7 @@ public class ProfileDTO {
     private String username;
     private String email;
     private String gravatarUrl;
+    private String aboutMe;
     private LocalDateTime lastseen;
 
 }
