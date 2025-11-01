@@ -1,5 +1,6 @@
 package com.microblog.backend.security.jwt;
 
+import com.microblog.backend.repositories.UserRepository;
 import com.microblog.backend.security.services.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 @Component
 public class AuthTokenFilter extends OncePerRequestFilter {
@@ -23,6 +25,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     private JwtUtils jwtUtils;
     @Autowired
     private CustomUserDetailsService userDetailsService;
+    @Autowired
+    private UserRepository userRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(AuthTokenFilter.class);
 
@@ -40,6 +44,14 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                // Update last seen
+                userRepository.findByEmail(username).ifPresent(user -> {
+                    user.setLastSeen(LocalDateTime.now());
+                    userRepository.save(user);
+                    userRepository.flush();
+                });
+
                 logger.debug("Roles from JWT: {}", userDetails.getAuthorities());
             }
 
