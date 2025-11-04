@@ -8,6 +8,7 @@ import com.microblog.backend.security.request.LoginRequest;
 import com.microblog.backend.security.request.SignUpRequest;
 import com.microblog.backend.security.response.UserInfoResponse;
 import com.microblog.backend.security.services.UserDetailsImpl;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -104,10 +105,21 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+        // Invalidate session if it exists
         HttpSession session = request.getSession(false);
         if (session != null) {
             session.invalidate();
         }
+
+        // Clear JWT cookie
+        Cookie cookie = new Cookie("jwt", null);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setMaxAge(0);
+        cookie.setDomain("localhost");
+        response.addCookie(cookie);
+
         return ResponseEntity.ok("Logged out successfully");
     }
 

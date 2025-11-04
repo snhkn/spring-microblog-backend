@@ -39,7 +39,7 @@ public class ProfileController {
         return profileService.getMyProfile(principal.getName());
     }
 
-    @PostMapping("/users/me")
+    @PutMapping("/users/me")
     public ProfileDTO updateMyProfile(@RequestBody ProfileDTO profileDTO, Principal principal){
         return profileService.updateMyProfile(principal.getName(), profileDTO);
     }
