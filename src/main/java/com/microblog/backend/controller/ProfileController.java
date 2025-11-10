@@ -29,9 +29,9 @@ public class ProfileController {
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
-    @GetMapping("/users/{username}")
-    public ProfileDTO getProfile(@PathVariable String username){
-        return profileService.getProfileByUsername(username);
+    @GetMapping("/users/{userId}")
+    public ProfileDTO getProfile(@PathVariable Long userId){
+        return profileService.getProfileByUserId(userId);
     }
 
     @GetMapping("/users/me")
@@ -49,6 +49,20 @@ public class ProfileController {
         System.out.println(principal.getName());
         List<Post> posts =  postService.getCurrentUserPosts(principal.getName());
         return posts.stream().map(post-> {
+            PostDTO dto = new PostDTO();
+            dto.setId(post.getId());
+            dto.setAuthor(post.getAuthor().getUsername());
+            dto.setBody(post.getBody());
+            dto.setCreatedAt(post.getTimestamp().format(formatter));
+            dto.setUserId(post.getAuthor().getId());
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    @GetMapping("/users/{userId}/posts")
+    public List<PostDTO> getUserPosts(@PathVariable Long userId) {
+        List<Post> posts = postService.getPostsByUserId(userId);
+        return posts.stream().map(post -> {
             PostDTO dto = new PostDTO();
             dto.setId(post.getId());
             dto.setAuthor(post.getAuthor().getUsername());

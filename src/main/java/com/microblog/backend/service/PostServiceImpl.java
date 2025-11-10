@@ -39,4 +39,11 @@ public class PostServiceImpl implements PostService{
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         return postRepository.findByAuthorOrderByTimestampDesc(user);
     }
+
+    @Override
+    public List<Post> getPostsByUserId(Long userId) {
+        SocialUser user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return postRepository.findByAuthorOrderByTimestampDesc(user);
+    }
 }

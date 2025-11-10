@@ -12,4 +12,6 @@ public interface PostService {
     Post createPost(Post post);
 
     List<Post> getCurrentUserPosts(String email);
+
+    List<Post> getPostsByUserId(Long userId);
 }

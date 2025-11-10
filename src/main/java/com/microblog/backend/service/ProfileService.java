@@ -5,7 +5,7 @@ import com.microblog.backend.payload.ProfileDTO;
 
 public interface ProfileService {
 
-    ProfileDTO getProfileByUsername(String username);
+    ProfileDTO getProfileByUserId(Long userId);
 
     ProfileDTO getMyProfile(String name);
 

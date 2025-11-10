@@ -6,12 +6,9 @@ import com.microblog.backend.repositories.UserRepository;
 import com.microblog.backend.security.jwt.JwtUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 public class ProfileServiceImpl implements ProfileService{
@@ -25,8 +22,8 @@ public class ProfileServiceImpl implements ProfileService{
     }
 
     @Override
-    public ProfileDTO getProfileByUsername(String username) {
-        SocialUser user = userRepository.findByUsername(username)
+    public ProfileDTO getProfileByUserId(Long userId) {
+        SocialUser user = userRepository.findById(userId)
                 .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         return modelMapper.map(user, ProfileDTO.class);

@@ -30,10 +30,10 @@ public class PostController {
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     @GetMapping("/public/posts")
-    public List<PostDTO> getAllPosts(){
+    public List<PostDTO> getAllPosts() {
         List<Post> posts = postService.getAllPosts();
 
-        return posts.stream().map(post-> {
+        return posts.stream().map(post -> {
             PostDTO dto = new PostDTO();
             dto.setId(post.getId());
             dto.setAuthor(post.getAuthor().getUsername());
