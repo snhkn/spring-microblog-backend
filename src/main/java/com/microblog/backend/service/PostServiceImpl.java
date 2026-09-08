@@ -10,7 +10,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PostServiceImpl implements PostService{
@@ -31,6 +34,25 @@ public class PostServiceImpl implements PostService{
     @Override
     public Post createPost(Post post) {
         return postRepository.save(post);
+    }
+
+    @Override
+    public Post editPost(Long postId, String body, SocialUser user){
+
+        Post editedPost = postRepository.findById(postId)
+                .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        if(editedPost.getAuthor().getId().equals(user.getId())){
+            // allowed
+            editedPost.setBody(body);
+
+        }else{
+            // not allowed
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+
+        return postRepository.save(editedPost);
+
     }
 
     @Override

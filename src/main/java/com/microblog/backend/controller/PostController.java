@@ -66,4 +66,29 @@ public class PostController {
 
         return responseDTO;
     }
+
+
+    @PostMapping("/admin/posts/{postId}")
+    public PostDTO editPost(@RequestBody PostDTO postDTO, @PathVariable long postId, Principal principal){
+        // Find logged-in user
+        SocialUser author = userRepository.findByEmail(principal.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        // Map DTO -> Entity
+        Post post = modelMapper.map(postDTO, Post.class);
+        post.setAuthor(author); // Set the author before saving
+        post.setId(postId);
+
+
+        Post editedPost = postService.editPost(postId, postDTO.getBody(), author);
+
+        // Build Response DTO
+        PostDTO responseDTO = new PostDTO();
+        responseDTO.setId(editedPost.getId());
+        responseDTO.setBody(editedPost.getBody());
+        responseDTO.setCreatedAt(editedPost.getTimestamp().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
+        responseDTO.setAuthor(editedPost.getAuthor().getUsername());
+        responseDTO.setUserId(editedPost.getAuthor().getId());
+
+        return responseDTO;
+    }
 }
