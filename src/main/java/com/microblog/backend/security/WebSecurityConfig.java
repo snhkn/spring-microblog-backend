@@ -1,11 +1,14 @@
 package com.microblog.backend.security;
 
 import com.microblog.backend.security.jwt.AuthTokenFilter;
+import com.microblog.backend.security.jwt.JwtUtils;
 import com.microblog.backend.security.services.CustomUserDetailsService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
@@ -23,6 +26,9 @@ public class WebSecurityConfig {
 
     @Autowired
     CustomUserDetailsService userDetailsService;
+
+    @Autowired
+    JwtUtils jwtUtils;
 
 
     @Bean
@@ -60,13 +66,20 @@ public class WebSecurityConfig {
                 )
                 .formLogin(form -> form.disable()) // disable default login page
                 .logout(logout -> logout
-                        .logoutUrl("/api/auth/logout")  // your logout endpoint
+                        .logoutUrl("/api/auth/logout")
+                        .addLogoutHandler((request, response, authentication) -> {
+                            ResponseCookie cleanJwtCookie = jwtUtils.getCleanJwtCookie();
+
+                            response.addHeader(
+                                    HttpHeaders.SET_COOKIE,
+                                    cleanJwtCookie.toString()
+                            );
+                        })
                         .logoutSuccessHandler((req, res, auth) -> {
                             res.setStatus(HttpServletResponse.SC_OK);
                         })
                         .deleteCookies("JSESSIONID")
                 );
-
         http.authenticationProvider(authenticationProvider());
 
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
