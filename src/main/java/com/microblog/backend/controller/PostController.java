@@ -68,7 +68,7 @@ public class PostController {
     }
 
 
-    @PostMapping("/admin/posts/{postId}")
+    @PutMapping("/admin/posts/{postId}")
     public PostDTO editPost(@RequestBody PostDTO postDTO, @PathVariable long postId, Principal principal){
         // Find logged-in user
         SocialUser author = userRepository.findByEmail(principal.getName())
