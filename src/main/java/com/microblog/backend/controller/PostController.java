@@ -6,6 +6,7 @@ import com.microblog.backend.payload.PostDTO;
 import com.microblog.backend.repositories.UserRepository;
 import com.microblog.backend.service.PostService;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.format.DateTimeFormatter;
@@ -44,7 +45,7 @@ public class PostController {
         }).collect(Collectors.toList());
     }
 
-    @PostMapping("/admin/posts")
+    @PostMapping("/posts")
     public PostDTO createPost(@RequestBody PostDTO postDTO, Principal principal){
         // Find logged-in user
         SocialUser author = userRepository.findByEmail(principal.getName())
@@ -68,7 +69,7 @@ public class PostController {
     }
 
 
-    @PutMapping("/admin/posts/{postId}")
+    @PutMapping("/posts/{postId}")
     public PostDTO editPost(@RequestBody PostDTO postDTO, @PathVariable long postId, Principal principal){
         // Find logged-in user
         SocialUser author = userRepository.findByEmail(principal.getName())
@@ -90,5 +91,20 @@ public class PostController {
         responseDTO.setUserId(editedPost.getAuthor().getId());
 
         return responseDTO;
+    }
+
+
+    @DeleteMapping("/posts/{postId}")
+    public ResponseEntity<?> deletePost(@PathVariable long postId, Principal principal){
+        //Find logged-in user
+        SocialUser author = userRepository.findByEmail(principal.getName())
+                .orElseThrow(()-> new RuntimeException("User not found") );
+
+        postService.deletePost(postId, author);
+
+        return ResponseEntity.noContent().build();
+
+
+
     }
 }

@@ -56,6 +56,20 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
+    public void deletePost(Long postId, SocialUser user){
+        Post deletedPost = postRepository.findById(postId)
+                .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        if (user.getId().equals(deletedPost.getAuthor().getId())){
+            // allowed
+            postRepository.delete(deletedPost);
+        }else{
+            // not allowed
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+    }
+
+    @Override
     public List<Post> getCurrentUserPosts(String email) {
         SocialUser user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));

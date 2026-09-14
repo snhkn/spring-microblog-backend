@@ -14,6 +14,8 @@ public interface PostService {
 
     Post editPost(Long postId, String body, SocialUser user);
 
+    void deletePost(Long postId, SocialUser socialUser);
+
     List<Post> getCurrentUserPosts(String email);
 
     List<Post> getPostsByUserId(Long userId);
