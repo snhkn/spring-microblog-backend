@@ -4,6 +4,7 @@ import com.microblog.backend.model.Post;
 import com.microblog.backend.model.SocialUser;
 import com.microblog.backend.payload.PostDTO;
 import com.microblog.backend.payload.ProfileDTO;
+import com.microblog.backend.payload.UserSearchDTO;
 import com.microblog.backend.service.PostService;
 import com.microblog.backend.service.ProfileService;
 import org.springframework.beans.factory.annotation.Value;
@@ -73,6 +74,9 @@ public class ProfileController {
         }).collect(Collectors.toList());
     }
 
-
+    @GetMapping("/users/search")
+    public List<UserSearchDTO> searchUsers(@RequestParam String query) {
+        return profileService.searchUsers(query.trim());
+    }
 
 }
