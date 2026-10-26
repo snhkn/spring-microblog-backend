@@ -1,13 +1,11 @@
 package com.microblog.backend.controller;
 
 import com.microblog.backend.model.Post;
-import com.microblog.backend.model.SocialUser;
 import com.microblog.backend.payload.PostDTO;
 import com.microblog.backend.payload.ProfileDTO;
 import com.microblog.backend.payload.UserSearchDTO;
 import com.microblog.backend.service.PostService;
 import com.microblog.backend.service.ProfileService;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
