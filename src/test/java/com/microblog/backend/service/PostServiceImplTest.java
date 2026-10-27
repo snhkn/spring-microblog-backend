@@ -3,7 +3,6 @@ package com.microblog.backend.service;
 import com.microblog.backend.model.Post;
 import com.microblog.backend.model.SocialUser;
 import com.microblog.backend.repositories.PostRepository;
-import com.microblog.backend.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
